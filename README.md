@@ -16,7 +16,7 @@ cmake ..
 cmake --build .
 cmake --install .
 ```
-`cmake ..` will attempt to find the game folder in `C:/Program Files (x86)/Steam/steamapps/common/`. If the game folder cannot be found rerun the command providing the path to the game folder: `cmake .. -DGAME_FOLDER="<FULL-PATH-TO-GAME-FOLDER>"`.
+`cmake ..` will attempt to find the game folder in `C:/Program Files (x86)/Steam/steamapps/common/`. If the game folder cannot be found rerun the command providing the path to the game folder:<br>`cmake .. -DGAME_FOLDER="<FULL-PATH-TO-GAME-FOLDER>"`
 
 2. Download [winmm.dll](https://github.com/ThirteenAG/Ultimate-ASI-Loader/releases) x64 version
 3. Extract to `CODE VEIN/CodeVein/Binaries/Win64`
