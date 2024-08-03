@@ -31,9 +31,32 @@ $fixName = "CodeVeinFix"
 
 $ymlFileContent = @"
 name: Code Vein Fix
-settings:
-  pillarbox_fix: true
-  fov_fix: true
+
+# Enables or disables all fixes
+masterEnable: true
+
+# Enter desired resolution.
+# A value of 0 in either width or height will use your desktop's resolution.
+resolution:
+  width: 0
+  height: 0
+
+# Available fixes
+fixes:
+
+  # If enabled pillarbox will be removed.
+  pillarbox:
+    enable: true
+  
+  # If enabled FOV will be dynamically fixed to scale correctly with chosen resolution. 
+  # Use multiplier to further adjust FOV if camera is too close or too far.
+  # Values approaching zero will narrow fov
+  # Values approaching infinity will widen fov.
+  # A multiplier of 0.785 will give exact FOV for 32:9 as seen in 16:9.
+  # A multiplier of 0.925 will give exact FOV for 21:9 as seen in 16:9.
+  fov:
+    enable: true
+    multiplier: 1.0
 "@
 
 if (Test-Path -Path $gameFolder) {

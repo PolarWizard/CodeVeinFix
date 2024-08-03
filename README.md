@@ -1,17 +1,16 @@
 # Code Vein Fix
-***This project is specifically designed for Windows, as it relies on Windows specific APIs.***
+***This project is designed exclusively for Windows due to its reliance on Windows-specific APIs. The build process requires the use of PowerShell.***
 
 ## Features
 - Removes pillarbox
-- Corrects FOV for 32:9
+- Corrects FOV
 
 ## Build and Install
 ### Using CMake
 1. Build and install:
-```shell
-git clone https://github.com/PolarWizard/CodeVeinFix
-mkdir build
-cd build
+```ps1
+git clone --recurse-submodules https://github.com/PolarWizard/CodeVeinFix
+cd CodeVeinFix; mkdir build; cd build
 cmake ..
 cmake --build .
 cmake --install .
@@ -20,10 +19,6 @@ cmake --install .
 
 2. Download [winmm.dll](https://github.com/ThirteenAG/Ultimate-ASI-Loader/releases) x64 version
 3. Extract to `CODE VEIN/CodeVein/Binaries/Win64`
-
-### Alternate
-1. Download [latest release](https://github.com/PolarWizard)
-2. Extract to `CODE VEIN/CodeVein/Binaries/Win64`
 
 ## Configuration
 - Adjust settings in `CODE VEIN/CodeVein/Binaries/Win64/scripts/CodeVeinFix.yml`
