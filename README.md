@@ -1,4 +1,6 @@
 # Code Vein Fix
+Adds support for ultrawide resolutions and additional features.
+
 ***This project is designed exclusively for Windows due to its reliance on Windows-specific APIs. The build process requires the use of PowerShell.***
 
 ## Features
@@ -33,6 +35,8 @@ cmake --install .
 Distributed under the MIT License. See [LICENSE](LICENSE) for more information.
 
 ## External Tools
-- [Ultimate ASI Loader](https://github.com/ThirteenAG/Ultimate-ASI-Loader)
+- [safetyhook](https://github.com/cursey/safetyhook)
 - [spdlog](https://github.com/gabime/spdlog)
+- [Ultimate ASI Loader](https://github.com/ThirteenAG/Ultimate-ASI-Loader)
 - [yaml-cpp](https://github.com/jbeder/yaml-cpp)
+- [zydis](https://github.com/zyantific/zydis)
