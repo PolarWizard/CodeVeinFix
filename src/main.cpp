@@ -29,11 +29,14 @@
 #include <string>
 #include <filesystem>
 #include <numeric>
+#include <numbers>
+#include <cmath>
 
 // 3rd party includes
 #include "spdlog/spdlog.h"
 #include "spdlog/sinks/basic_file_sink.h"
 #include "yaml-cpp/yaml.h"
+#include "safetyhook.hpp"
 
 // Local includes
 #include "utils.hpp"
@@ -191,9 +194,8 @@ void resolutionFix() {
 }
 
 void fovFix() {
-    const char* patternFind  = "35 FA 0E 3C A4";
-    const char* patternPatch;
-
+    const char* patternFind  = "F3 0F 10 81 9C 03 00 00 0F 57 C9 0F 2F C1";
+    uintptr_t hookOffset = 8;
     bool enable = yml.masterEnable & yml.fix.pillarbox.enable;
     LOG("Fix {}", enable ? "Enabled" : "Disabled");
     if (enable) {
@@ -203,14 +205,18 @@ void fovFix() {
         uintptr_t absAddr = (uintptr_t)hit;
         uintptr_t relAddr = (uintptr_t)hit - (uintptr_t)baseModule;
         if (hit) {
-            float currFov = *(float*)hit;
-            float ratio = yml.resolution.aspectRatio / nativeAspectRatio;
-            float newFov = currFov * ratio * yml.fix.fov.multiplier;
-            std::string patternPatchString = Utils::bytesToString((void*)&newFov, sizeof(newFov));
-            patternPatch = patternPatchString.c_str();
             LOG("Found '{}' @ 0x{:x}", patternFind, relAddr);
-            Utils::patch(absAddr, patternPatch);
-            LOG("Patched '{}' with '{}'", patternFind, patternPatch);
+            uintptr_t hookAbsAddr = absAddr + hookOffset;
+            uintptr_t hookRelAddr = relAddr + hookOffset;
+            static SafetyHookMid fovMidHook{};
+            fovMidHook = safetyhook::create_mid(reinterpret_cast<void*>(hookAbsAddr),
+                [](SafetyHookContext& ctx) {
+                    float pi = std::numbers::pi_v<float>;
+                    float newFov = atanf(tanf(68.0f * pi / 360.0f) / nativeAspectRatio * yml.resolution.aspectRatio) * 360.0f / pi;
+                    ctx.xmm0.f32[0] = newFov * yml.fix.fov.multiplier;
+                }
+            );
+            LOG("Hooked @ 0x{:x} + 0x{:x} = 0x{:x}", relAddr, hookOffset, hookRelAddr);
         }
         else {
             LOG("Did not find '{}'", patternFind);

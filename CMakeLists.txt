@@ -46,18 +46,23 @@ file(GLOB_RECURSE SOURCE src/*.cpp)
 add_library(${PROJECT_NAME} SHARED ${SOURCE})
 
 # Add directory and build
-add_subdirectory(yaml-cpp)
+add_subdirectory(yaml-cpp EXCLUDE_FROM_ALL)
+add_subdirectory(safetyhook EXCLUDE_FROM_ALL)
+add_subdirectory(zydis EXCLUDE_FROM_ALL)
 
 # Include directories
 target_include_directories(${PROJECT_NAME} PUBLIC
     inc
     spdlog/include
     yaml-cpp/include
+    safetyhook/include
+    zydis/include
 )
 
 # Include libraries
 target_link_libraries(${PROJECT_NAME} PUBLIC
     yaml-cpp
+    safetyhook
 )
 
 install(CODE "
