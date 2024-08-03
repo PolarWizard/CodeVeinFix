@@ -23,6 +23,9 @@ cmake --install .
 ## Configuration
 - Adjust settings in `CODE VEIN/CodeVein/Binaries/Win64/scripts/CodeVeinFix.yml`
 
+## Screenshots
+![Demo](images/CodeVeinFix_1.gif)
+
 ## License
 Distributed under the MIT License. See [LICENSE](LICENSE) for more information.
 
