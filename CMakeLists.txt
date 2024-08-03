@@ -39,15 +39,18 @@ project(${PROJECT_NAME} VERSION 1.0)
 set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
+#Get all src files
+file(GLOB_RECURSE SOURCE src/*.cpp)
+
 # Add DLL
-add_library(${PROJECT_NAME} SHARED main.cpp utils.cpp)
+add_library(${PROJECT_NAME} SHARED ${SOURCE})
 
 # Add directory and build
 add_subdirectory(yaml-cpp)
 
 # Include directories
 target_include_directories(${PROJECT_NAME} PUBLIC
-    utils.hpp
+    inc
     spdlog/include
     yaml-cpp/include
 )
