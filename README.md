@@ -20,6 +20,9 @@ cmake --install .
 2. Download [winmm.dll](https://github.com/ThirteenAG/Ultimate-ASI-Loader/releases) x64 version
 3. Extract to `CODE VEIN/CodeVein/Binaries/Win64`
 
+### Using Release Candidate
+1. Download and follow instructions in [latest release](https://github.com/PolarWizard/CodeVeinFix/releases)
+
 ## Configuration
 - Adjust settings in `CODE VEIN/CodeVein/Binaries/Win64/scripts/CodeVeinFix.yml`
 
