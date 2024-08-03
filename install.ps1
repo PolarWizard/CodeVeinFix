@@ -1,3 +1,4 @@
+<#
 MIT License
 
 Copyright (c) 2024 Dominik Protasewicz
@@ -19,3 +20,32 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
+#>
+
+$gameFolder = "C:\Program Files (x86)\Steam\steamapps\common\CODE VEIN"
+$gameSubFolder = "CodeVein\Binaries\Win64"
+$scriptsFolder = "scripts"
+$fullPath = "$gameFolder\$gameSubFolder\$scriptsFolder"
+
+$fixName = "CodeVeinFix"
+
+$ymlFileContent = @"
+name: Code Vein Fix
+settings:
+  pillarbox_fix: true
+  fov_fix: true
+"@
+
+if (Test-Path -Path $gameFolder) {
+    $dllPath = Get-ChildItem -Path "$PSScriptRoot\build\*.dll" -Recurse
+    Write-Output "Found DLL at $dllPath"
+    New-Item -Path "$fullPath" -ItemType Directory -Force | Out-Null
+    Write-Output "Copying DLL to $fullPath"
+    Copy-Item -Path $dllPath -Destination "$fullPath"
+    Move-Item -Path $fullPath\$fixName.dll -Destination $fullPath\$fixName.asi -Force
+    Write-Output "Creating $fixName.yml at $fullPath"
+    New-Item -Path $fullPath -Name "$fixName.yml" -ItemType File -Value $ymlFileContent -Force | Out-Null
+    Write-Output "Done!"
+} else {
+    Write-Output "Game folder not found at $gameFolder"
+}
