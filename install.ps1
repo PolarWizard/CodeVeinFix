@@ -50,10 +50,8 @@ fixes:
   
   # If enabled FOV will be dynamically fixed to scale correctly with chosen resolution. 
   # Use multiplier to further adjust FOV if camera is too close or too far.
-  # Values approaching zero will narrow fov
-  # Values approaching infinity will widen fov.
-  # A multiplier of 0.785 will give exact FOV for 32:9 as seen in 16:9.
-  # A multiplier of 0.925 will give exact FOV for 21:9 as seen in 16:9.
+  # Values <1 will narrow fov
+  # Values >1 will widen fov.
   fov:
     enable: true
     multiplier: 1.0

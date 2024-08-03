@@ -9,7 +9,7 @@
 ### Using CMake
 1. Build and install:
 ```ps1
-git clone --recurse-submodules https://github.com/PolarWizard/CodeVeinFix
+git clone --recurse-submodules https://github.com/PolarWizard/CodeVeinFix.git
 cd CodeVeinFix; mkdir build; cd build
 cmake ..
 cmake --build .
