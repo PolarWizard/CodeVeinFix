@@ -62,8 +62,8 @@ fixes:
     enable: true
 
 
-    # If enabled FOV will be dynamically fixed to scale correctly with chosen resolution.
-    # Game default FOV is 68.
+  # If enabled FOV will be dynamically fixed to scale correctly with chosen resolution.
+  # Game default FOV is 68.
   fov:
     enable: true
     value: 68
