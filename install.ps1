@@ -22,7 +22,20 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 #>
 
-$gameFolder = "C:\Program Files (x86)\Steam\steamapps\common\CODE VEIN"
+function Show-Usage {
+  Write-Output "Usage: .\install.ps1 <path to BorderlandsGOTYEnhanced game folder>"
+  exit 1
+}
+
+if (-not $args[0]) {
+    Show-Usage
+}
+if (-not (Test-Path -Path $args[0])) {
+  Write-Output "Error: The path '$filePath' does not exist or is not valid."
+  Show-Usage
+}
+
+$gameFolder = $args[0]
 $gameSubFolder = "CodeVein\Binaries\Win64"
 $scriptsFolder = "scripts"
 $fullPath = "$gameFolder\$gameSubFolder\$scriptsFolder"
@@ -47,20 +60,17 @@ fixes:
   # If enabled pillarbox will be removed.
   pillarbox:
     enable: true
-  
-  # If enabled FOV will be dynamically fixed to scale correctly with chosen resolution. 
-  # Use multiplier to further adjust FOV if camera is too close or too far.
-  # Values approaching zero will narrow fov
-  # Values approaching infinity will widen fov.
-  # A multiplier of 0.785 will give exact FOV for 32:9 as seen in 16:9.
-  # A multiplier of 0.925 will give exact FOV for 21:9 as seen in 16:9.
+
+
+    # If enabled FOV will be dynamically fixed to scale correctly with chosen resolution.
+    # Game default FOV is 68.
   fov:
     enable: true
-    multiplier: 1.0
+    value: 68
 "@
 
 if (Test-Path -Path $gameFolder) {
-    $dllPath = Get-ChildItem -Path "$PSScriptRoot\build\*.dll" -Recurse
+    $dllPath = Get-ChildItem -Path "$PSScriptRoot\bin\*.dll" -Recurse
     Write-Output "Found DLL at $dllPath"
     New-Item -Path "$fullPath" -ItemType Directory -Force | Out-Null
     Write-Output "Copying DLL to $fullPath"

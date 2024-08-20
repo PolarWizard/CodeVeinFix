@@ -1,18 +1,18 @@
 /*
  * MIT License
- * 
+ *
  * Copyright (c) 2024 Dominik Protasewicz
- * 
+ *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
  * in the Software without restriction, including without limitation the rights
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in all
  * copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -31,6 +31,7 @@
 #include <numeric>
 #include <numbers>
 #include <cmath>
+#include <cstdint>
 
 // 3rd party includes
 #include "spdlog/spdlog.h"
@@ -47,14 +48,14 @@
 typedef struct resolution_t {
     int width;
     int height;
-    float aspectRatio; 
+    float aspectRatio;
 } resolution_t;
 typedef struct pillarbox_t {
     bool enable;
 } pillarbox_t;
 typedef struct fov_t {
     bool enable;
-    float multiplier;
+    float value;
 } fov_t;
 
 typedef struct fix_t {
@@ -89,6 +90,7 @@ void logInit() {
 
     // Log module details
     LOG("-------------------------------------");
+    LOG("Compiler: {:s}", Utils::getCompilerInfo().c_str());
     LOG("Module Name: {:s}", exeName.c_str());
     LOG("Module Path: {:s}", exeFilePath.string().c_str());
     LOG("Module Addr: 0x{:x}", (uintptr_t)baseModule);
@@ -105,7 +107,7 @@ void readYml() {
     yml.fix.pillarbox.enable = config["fixes"]["pillarbox"]["enable"].as<bool>();
 
     yml.fix.fov.enable = config["fixes"]["fov"]["enable"].as<bool>();
-    yml.fix.fov.multiplier = config["fixes"]["fov"]["multiplier"].as<float>();
+    yml.fix.fov.value = config["fixes"]["fov"]["value"].as<float>();
 
     // Initialize globals
     if (yml.resolution.width == 0 || yml.resolution.height == 0) {
@@ -122,7 +124,7 @@ void readYml() {
     LOG("Resolution.AspectRatio: {}", yml.resolution.aspectRatio);
     LOG("Fix.Pillarbox.Enable: {}", yml.fix.pillarbox.enable);
     LOG("Fix.Fov.Enable: {}", yml.fix.fov.enable);
-    LOG("Fix.Fov.Multuplier: {}", yml.fix.fov.multiplier);
+    LOG("Fix.Fov.Value: {}", yml.fix.fov.value);
 }
 
 void pillarBoxFix() {
@@ -152,18 +154,18 @@ void resolutionFix() {
     const char* patternFind  = "39 8E E3 3F";
     const char* patternPatch;
 
-    LOG("Desktop resolution: {}x{}", 
+    LOG("Desktop resolution: {}x{}",
         yml.resolution.width, yml.resolution.height
     );
-    LOG("Aspect Ratio: {}:{} {}", 
-        yml.resolution.width / std::gcd(yml.resolution.width, yml.resolution.height), 
+    LOG("Aspect Ratio: {}:{} {}",
+        yml.resolution.width / std::gcd(yml.resolution.width, yml.resolution.height),
         yml.resolution.height / std::gcd(yml.resolution.width, yml.resolution.height),
         yml.resolution.aspectRatio
     );
 
     // Use acquired desktop resolution to resolve the pattern that will be used to patch
     std::string patternPatchString = Utils::bytesToString(
-        (void*)&yml.resolution.aspectRatio, 
+        (void*)&yml.resolution.aspectRatio,
         sizeof(yml.resolution.aspectRatio)
     );
     patternPatch = patternPatchString.c_str();
@@ -178,11 +180,11 @@ void resolutionFix() {
             uintptr_t absAddr = (uintptr_t)hit;
             uintptr_t relAddr = (uintptr_t)hit - (uintptr_t)baseModule;
             if (hit) {
-                LOG("Found '{}' @ 0x{:x}", 
+                LOG("Found '{}' @ 0x{:x}",
                     patternFind, relAddr
                 );
                 Utils::patch(absAddr, patternPatch);
-                LOG("Patched '{}' with '{}'", 
+                LOG("Patched '{}' with '{}'",
                     patternFind, patternPatch
                 );
             }
@@ -212,8 +214,8 @@ void fovFix() {
             fovMidHook = safetyhook::create_mid(reinterpret_cast<void*>(hookAbsAddr),
                 [](SafetyHookContext& ctx) {
                     float pi = std::numbers::pi_v<float>;
-                    float newFov = atanf(tanf(68.0f * pi / 360.0f) / nativeAspectRatio * yml.resolution.aspectRatio) * 360.0f / pi;
-                    ctx.xmm0.f32[0] = newFov * yml.fix.fov.multiplier;
+                    float newFov = atanf(tanf(yml.fix.fov.value * pi / 360.0f) / nativeAspectRatio * yml.resolution.aspectRatio) * 360.0f / pi;
+                    ctx.xmm0.f32[0] = newFov;
                 }
             );
             LOG("Hooked @ 0x{:x} + 0x{:x} = 0x{:x}", relAddr, hookOffset, hookRelAddr);
@@ -255,4 +257,3 @@ BOOL APIENTRY DllMain(
     }
     return TRUE;
 }
-
